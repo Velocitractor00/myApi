@@ -1,3 +1,45 @@
+const express = require('express');
+const path = require ('path');
+const favicon = require('serve-favicon');
+const logger = require ('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const passport = require('passport');
+const config = require('./config/database');
+
+try{
+  mongoose.set('useNewUrlParser',true);
+  mongoose.set('useCreateIndex',true);
+  mongoose.connect(config.database);
+}
+catch(e){
+  console.log(e.message);
+}
+
+//add route for our api
+const api = require('.routes/api');
+const app = express();
+
+// add Cors Support before any routing
+app.use( function (reg, res, next){
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.header('Access-Control-Expose-Headers', 'Authorization'); //have to expose
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS');
+  next();
+});
+
+app.use(passport.initialise());
+
+//app.use('/', index);
+app.use('/api',api);
+app.use('/users', users);
+
+app.get('/',function(reg,res){
+  res.send('Page under construction.');
+});
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
